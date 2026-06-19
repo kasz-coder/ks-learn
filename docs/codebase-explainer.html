@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeachFlow — How Teaching Works</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #1a1a2e; line-height: 1.7; }
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* Hero */
+.hero { text-align: center; padding: 3rem 0 2rem; }
+.hero h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; background: linear-gradient(135deg, #2563eb, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { color: #64748b; margin-top: 0.5rem; font-size: 1.1rem; }
+
+/* Section */
+.section { background: #fff; border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); border: 1px solid #e2e8f0; }
+.section h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+.section h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: #2563eb; color: #fff; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+.section h3 { font-size: 1.05rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: #334155; }
+.section p { margin-bottom: 0.75rem; color: #475569; }
+.section ul, .section ol { margin: 0.5rem 0 1rem 1.5rem; color: #475569; }
+.section li { margin-bottom: 0.35rem; }
+
+/* Inline code */
+code { background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; color: #2563eb; font-weight: 500; }
+
+/* Block code */
+pre { background: #1e293b; color: #e2e8f0; padding: 1rem 1.25rem; border-radius: 10px; overflow-x: auto; margin: 0.75rem 0 1rem; font-size: 0.85rem; line-height: 1.6; }
+pre .kw { color: #c084fc; } pre .str { color: #86efac; } pre .cm { color: #64748b; } pre .tag { color: #fca5a5; } pre .atn { color: #93c5fd; } pre .atv { color: #86efac; } pre .pun { color: #e2e8f0; }
+
+/* Tags */
+.tag { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.01em; }
+.tag-lesson { background: #dbeafe; color: #1d4ed8; }
+.tag-ref { background: #dcfce7; color: #15803d; }
+.tag-record { background: #f3e8ff; color: #7c3aed; }
+.tag-roadmap { background: #fef3c7; color: #b45309; }
+
+/* Flow diagram (CSS-based) */
+.flow { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: center; padding: 1.5rem 0; }
+.flow-node { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 0.75rem 1.25rem; text-align: center; font-size: 0.85rem; font-weight: 500; min-width: 100px; }
+.flow-node.highlight { border-color: #2563eb; background: #eff6ff; }
+.flow-node .icon { font-size: 1.3rem; display: block; margin-bottom: 0.25rem; }
+.flow-arrow { font-size: 1.2rem; color: #94a3b8; flex-shrink: 0; }
+
+/* File card */
+.file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; margin: 0.75rem 0; }
+.file-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.85rem 1rem; }
+.file-card .path { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; color: #2563eb; font-weight: 600; }
+.file-card .desc { font-size: 0.85rem; color: #475569; margin-top: 0.2rem; }
+
+/* Block example grid */
+.block-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 0.75rem 0; }
+@media (max-width: 640px) { .block-grid { grid-template-columns: 1fr; } }
+.block-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; background: #fafafa; }
+.block-card h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; }
+.block-card pre { margin: 0; font-size: 0.75rem; }
+
+/* Sequence diagram (simplified) */
+.seq { position: relative; padding: 1.5rem 0; }
+.seq-item { display: flex; gap: 1rem; margin-bottom: 0; position: relative; padding-bottom: 1.5rem; }
+.seq-item::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: #e2e8f0; }
+.seq-item:last-child::before { display: none; }
+.seq-dot { width: 32px; height: 32px; border-radius: 50%; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+.seq-dot.purple { background: #7c3aed; }
+.seq-dot.green { background: #059669; }
+.seq-dot.amber { background: #d97706; }
+.seq-body { flex: 1; padding-top: 0.25rem; }
+.seq-body strong { display: block; font-size: 0.9rem; }
+.seq-body p { margin: 0.15rem 0 0; font-size: 0.85rem; color: #64748b; }
+
+/* Table */
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 0.75rem 0; font-size: 0.85rem; }
+th { background: #f1f5f9; padding: 0.6rem 0.75rem; text-align: left; font-weight: 600; color: #334155; border-bottom: 2px solid #e2e8f0; }
+td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #e2e8f0; color: #475569; }
+tr:last-child td { border-bottom: none; }
+
+/* Key-value */
+.kv { display: grid; grid-template-columns: 130px 1fr; gap: 0.25rem 0.75rem; margin: 0.5rem 0; font-size: 0.9rem; }
+.kv dt { font-weight: 600; color: #334155; }
+.kv dd { color: #475569; }
+
+/* Highlight box */
+.box { background: #f8fafc; border-left: 4px solid #2563eb; border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 0.75rem 0; }
+.box.purple { border-left-color: #7c3aed; }
+.box.green { border-left-color: #059669; }
+.box.amber { border-left-color: #d97706; }
+.box p:last-child { margin-bottom: 0; }
+
+@media (max-width: 640px) { .hero h1 { font-size: 1.8rem; } .section { padding: 1.25rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <h1>TeachFlow</h1>
+  <p>How the AI-powered teaching system works — from chat to lessons, roadmaps, references, and records.</p>
+</div>
+
+<!-- 1. Overview -->
+<div class="section">
+  <h2><span class="num">1</span> End-to-End Flow</h2>
+  <p>A conversational AI tutoring system built on a <strong>chat-driven loop</strong>. The user types a message, the AI generates a response that may include structured <code>:::</code> blocks, and those blocks are saved to the database as persistent learning artifacts.</p>
+
+  <div class="flow">
+    <div class="flow-node highlight"><span class="icon">💬</span>User Message</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node"><span class="icon">🛡️</span>Auth &amp; Rate Limit</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node"><span class="icon">🧠</span>Build Context</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node"><span class="icon">🤖</span>AI (Agnes 2.0)</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node"><span class="icon">📡</span>SSE Stream</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node"><span class="icon">💾</span>Parse &amp; Save Blocks</div>
+  </div>
+
+  <div class="box">
+    <strong>Key insight:</strong> The AI is instructed to output <code>:::lesson[Title]</code>, <code>:::reference[Title]</code>, <code>:::record[Title]</code>, and <code>:::roadmap[Title]</code> blocks. The backend parses these with regex and upserts them into Supabase tables. The frontend renders them as clickable cards with iframe previews.
+  </div>
+</div>
+
+<!-- 2. The System Prompt -->
+<div class="section">
+  <h2><span class="num">2</span> The System Prompt</h2>
+  <p>The <code>TEACH_SYSTEM_PROMPT</code> (in <code>lib/openrouter.ts:12</code>) is a 119-line instruction that defines the AI teacher's personality and rules.</p>
+
+  <h3>Core Philosophy</h3>
+  <ul>
+    <li><strong>Knowledge</strong> — high-quality lessons (HTML with inline CSS)</li>
+    <li><strong>Skills</strong> — interactive practice (quizzes with <code>data-correct</code>)</li>
+    <li><strong>Wisdom</strong> — real-world application (tying back to user's "WHY")</li>
+  </ul>
+
+  <h3>Teaching Sequence</h3>
+  <div class="seq">
+    <div class="seq-item">
+      <div class="seq-dot">1</div>
+      <div class="seq-body"><strong>ASK</strong><p>About the user's mission (WHY) if not yet defined</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">2</div>
+      <div class="seq-body"><strong>ASSESS</strong><p>Gauge the user's current knowledge level</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot purple">3</div>
+      <div class="seq-body"><strong>PLAN</strong> → <span class="tag tag-roadmap">roadmap block</span><p>Present a structured learning path as JSON with goal + steps</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">4</div>
+      <div class="seq-body"><strong>TEACH</strong> → <span class="tag tag-lesson">lesson block</span><p>Create an HTML lesson with meta, insight, compare, quiz, and next sections</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">5</div>
+      <div class="seq-body"><strong>CHECK</strong><p>Pose quiz questions to verify understanding</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot green">6</div>
+      <div class="seq-body"><strong>TRACK</strong> → <span class="tag tag-record">record block</span><p>Log what was learned with a learning record</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot amber">7</div>
+      <div class="seq-body"><strong>SUGGEST</strong><p>Recommend next steps / further exploration</p></div>
+    </div>
+  </div>
+
+  <h3>Key Rules</h3>
+  <ul>
+    <li>Only output plain text or <code>:::</code> blocks — no XML, no JSON wrappers</li>
+    <li>Never use <code>&lt;style&gt;</code> blocks; use CSS class names only (<code>meta</code>, <code>insight</code>, <code>compare</code>, <code>quiz</code>, <code>next</code>, <code>term</code>, <code>name</code>, <code>def</code>)</li>
+    <li>Quiz options must use <code>data-correct="true"</code> or <code>data-correct="false"</code></li>
+    <li>Keep lessons short — one concept each</li>
+    <li>Always tie back to the user's mission</li>
+    <li>Web search is available via Tavily API — cite sources with URLs</li>
+    <li>Language support: if user prefers non-English, the prompt appends a language instruction</li>
+  </ul>
+</div>
+
+<!-- 3. Block Types -->
+<div class="section">
+  <h2><span class="num">3</span> Block Types</h2>
+  <p>The AI expresses structured content via four block types. Each block starts with <code>:::type[Title]</code> and closes with <code>:::</code>.</p>
+
+  <div class="block-grid">
+    <div class="block-card">
+      <h4><span class="tag tag-lesson">lesson</span> Lesson</h4>
+      <pre><span class="pun">:::</span><span class="tag">lesson</span><span class="pun">[</span><span class="str">Python Variables</span><span class="pun">]</span>
+<span class="tag">&lt;div</span> <span class="atn">class</span>=<span class="atv">"meta"</span><span class="tag">&gt;</span>Lesson · Basics<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;h1&gt;</span>Python Variables<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;p&gt;</span>Variables store data...<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;div</span> <span class="atn">class</span>=<span class="atv">"compare"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="atn">class</span>=<span class="atv">"bad"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="atn">class</span>=<span class="atv">"good"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="atn">class</span>=<span class="atv">"quiz"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="atn">class</span>=<span class="atv">"q"</span> <span class="atn">data-correct</span>=<span class="atv">"true"</span><span class="tag">&gt;</span>A<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="atn">class</span>=<span class="atv">"next"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+<span class="pun">:::</span></pre>
+    </div>
+    <div class="block-card">
+      <h4><span class="tag tag-ref">reference</span> Reference / Glossary</h4>
+      <pre><span class="pun">:::</span><span class="tag">reference</span><span class="pun">[</span><span class="str">Python Glossary</span><span class="pun">]</span>
+<span class="tag">&lt;div</span> <span class="atn">class</span>=<span class="atv">"term"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="atn">class</span>=<span class="atv">"name"</span><span class="tag">&gt;</span>Variable<span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="atn">class</span>=<span class="atv">"def"</span><span class="tag">&gt;</span>A storage location...<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="pun">:::</span></pre>
+    </div>
+    <div class="block-card">
+      <h4><span class="tag tag-roadmap">roadmap</span> Learning Roadmap</h4>
+      <pre><span class="pun">:::</span><span class="tag">roadmap</span><span class="pun">[</span><span class="str">Learning Path: Python</span><span class="pun">]</span>
+{
+  <span class="str">"goal"</span>: <span class="str">"Build a web app..."</span>,
+  <span class="str">"steps"</span>: [
+    { <span class="str">"order"</span>: 1, <span class="str">"title"</span>: <span class="str">"Basics"</span>, <span class="str">"status"</span>: <span class="str">"upcoming"</span> }
+  ]
+}
+<span class="pun">:::</span></pre>
+    </div>
+    <div class="block-card">
+      <h4><span class="tag tag-record">record</span> Learning Record</h4>
+      <pre><span class="pun">:::</span><span class="tag">record</span><span class="pun">[</span><span class="str">Variables Session</span><span class="pun">]</span>
+- Date: today
+- Key insight: Variables are...
+- Questions: What about constants?
+<span class="pun">:::</span></pre>
+    </div>
+  </div>
+
+  <h3>Fallback: Untitled Lesson</h3>
+  <p>If no blocks are found but the response contains HTML-like tags (<code>&lt;div&gt;</code>, <code>&lt;h1&gt;</code>, etc.) and is >50 characters, <code>parseBlocks()</code> wraps it as an "Untitled Lesson" to avoid data loss (see <code>lib/blocks.ts:71-76</code>).</p>
+</div>
+
+<!-- 4. Chat API Deep Dive -->
+<div class="section">
+  <h2><span class="num">4</span> Chat API — <code>POST /api/chat</code></h2>
+  <p>The central endpoint in <code>app/api/chat/route.ts</code>. Here's exactly what happens:</p>
+
+  <div class="seq">
+    <div class="seq-item">
+      <div class="seq-dot">1</div>
+      <div class="seq-body"><strong>Authenticate</strong><p>Supabase SSR auth — rejects unauthenticated requests with 401</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">2</div>
+      <div class="seq-body"><strong>Rate Limit</strong><p>In-memory per-user: 20 requests/minute. Returns 429 + <code>Retry-After</code> header if exceeded.</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">3</div>
+      <div class="seq-body"><strong>Validate Input</strong><p>Zod schema: <code>workspaceId</code> (UUID) + <code>message</code> (1-10,000 chars)</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">4</div>
+      <div class="seq-body"><strong>Verify Workspace Ownership</strong><p>Fetches workspace by ID + user_id — ensures RLS compliance</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">5</div>
+      <div class="seq-body"><strong>Save User Message</strong><p>Inserts <code>{ workspace_id, role: 'user', content }</code> into <code>chat_messages</code></p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot green">6</div>
+      <div class="seq-body"><strong>Check for User Roadmap</strong><p>If the user typed a <code>roadmap[...]</code> block directly, upsert it to Supabase</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">7</div>
+      <div class="seq-body"><strong>Fetch History</strong><p>Last 500 messages from <code>chat_messages</code> for this workspace</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">8</div>
+      <div class="seq-body"><strong>Fetch Existing Content</strong><p>Parallel queries for lessons, references (5), learning records (10), roadmaps (1)</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot purple">9</div>
+      <div class="seq-body"><strong>Summarize (if due)</strong><p>Every 25 messages, call AI again to generate a 2-3 sentence summary. Store in <code>workspaces.context_summary</code>. This preserves long-term context when old messages drop out of the budget.</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">10</div>
+      <div class="seq-body"><strong>Build Context</strong><p><code>buildContext()</code> in <code>lib/context.ts</code>: system prompt + state block (topic, mission, lessons, references, records, roadmaps) + conversation summary + message history. Budget: ~24,000 chars (~6,857 tokens). Truncates oldest messages first.</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">11</div>
+      <div class="seq-body"><strong>Phase 1: AI Call (with tool support)</strong><p>Calls Agnes 2.0 Flash with <code>tools: [WEB_SEARCH_TOOL]</code>. If the AI calls <code>web_search</code>, the query goes to Tavily API, results are injected as a tool response message, and Phase 2 streams the final answer.</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot amber">12</div>
+      <div class="seq-body"><strong>Phase 2: SSE Streaming (or direct response)</strong><p>If tool calls were made, stream the follow-up. Otherwise, use the direct response. Streams <code>data: {"content": "..."}</code> SSE events to the client.</p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">13</div>
+      <div class="seq-body"><strong>Save Assistant Message</strong><p>After stream completes, save the full response to <code>chat_messages</code></p></div>
+    </div>
+    <div class="seq-item">
+      <div class="seq-dot">14</div>
+      <div class="seq-body"><strong>Parse &amp; Upsert Blocks</strong><p>Fire-and-forget <code>Promise.all()</code>: parse <code>:::</code> blocks, upsert to Supabase (lesson versioning, slug-dedup references, always-insert records, single-row roadmaps)</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Context Builder -->
+<div class="section">
+  <h2><span class="num">5</span> Token-Budgeted Context</h2>
+  <p><code>lib/context.ts</code> builds the AI's context window under a character budget:</p>
+
+  <div class="kv">
+    <dt>Default Budget</dt><dd>24,000 characters (~6,857 tokens at 3.5 chars/token)</dd>
+    <dt>State Block</dt><dd>Shows topic, mission, and summaries of existing lessons/references/records/roadmaps (each truncated to 200 chars)</dd>
+    <dt>Conversation Summary</dt><dd>Optional second system message with a 2-3 sentence summary (generated every 25 messages)</dd>
+    <dt>History Truncation</dt><dd>Messages are walked in reverse (newest first). If within budget, included. If partially over budget but above 64-char threshold, truncated. Older messages dropped with a system note: <code>"[N earlier message(s) omitted]"</code></dd>
+  </div>
+
+  <div class="box purple">
+    <strong>Why token budgeting matters:</strong> Without it, long conversations would exceed the AI's context window. The summary mechanism ensures key information persists even as detailed chat history is pruned.
+  </div>
+</div>
+
+<!-- 6. Database Tables -->
+<div class="section">
+  <h2><span class="num">6</span> Database Schema (Supabase)</h2>
+  <p>All tables have RLS enabled — users can only access their own data via workspace ownership.</p>
+
+  <table>
+    <tr>
+      <th>Table</th>
+      <th>Key Columns</th>
+      <th>Unique / Notes</th>
+    </tr>
+    <tr>
+      <td><code>workspaces</code></td>
+      <td><code>id, user_id, topic, mission, context_summary, summary_message_count</code></td>
+      <td>One per learning topic. <code>context_summary</code> preserves long-term memory.</td>
+    </tr>
+    <tr>
+      <td><code>chat_messages</code></td>
+      <td><code>id, workspace_id, role, content, created_at</code></td>
+      <td>All conversation history. <code>role</code> = <code>user</code> | <code>assistant</code></td>
+    </tr>
+    <tr>
+      <td><code>lessons</code></td>
+      <td><code>id, workspace_id, title, slug, content, order, version</code></td>
+      <td>Unique per <code>(workspace_id, slug)</code>. Version auto-increments on update via <code>upsert_lesson_with_version()</code> RPC. Old versions saved to <code>lesson_versions</code>.</td>
+    </tr>
+    <tr>
+      <td><code>references_doc</code></td>
+      <td><code>id, workspace_id, title, slug, content</code></td>
+      <td>Unique per <code>(workspace_id, slug)</code>. Slug-based dedup (update existing, insert new).</td>
+    </tr>
+    <tr>
+      <td><code>learning_records</code></td>
+      <td><code>id, workspace_id, title, content</code></td>
+      <td>Always inserts a new row — no dedup. Each record is an append-only log entry.</td>
+    </tr>
+    <tr>
+      <td><code>roadmaps</code></td>
+      <td><code>id, workspace_id, title, goal, steps (jsonb), updated_at</code></td>
+      <td>Single per workspace. If AI outputs a new roadmap, it updates the existing row.</td>
+    </tr>
+    <tr>
+      <td><code>lesson_versions</code></td>
+      <td><code>id, lesson_id, version, title, content, created_at</code></td>
+      <td>Version history for lessons. Browsable from the Resources page.</td>
+    </tr>
+    <tr>
+      <td><code>user_settings</code></td>
+      <td><code>user_id, language</code></td>
+      <td>Per-user language preference. Default: English.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- 7. Frontend Rendering -->
+<div class="section">
+  <h2><span class="num">7</span> Frontend Rendering</h2>
+
+  <h3>Chat Message (<code>components/chat/chat-message.tsx</code>)</h3>
+  <p>The AI response is split by a regex into text parts and blocks:</p>
+  <ul>
+    <li><strong>Lesson / Reference</strong> — rendered as a clickable card with an <code>&lt;iframe&gt;</code> preview (scaled to 1/3 via CSS transform)</li>
+    <li><strong>Learning Record</strong> — rendered as an inline purple-themed card showing the record content</li>
+    <li><strong>Roadmap</strong> — rendered as a button linking to <code>/workspaces/[id]/roadmap</code></li>
+    <li><strong>Text</strong> — rendered in message bubbles with <code>whitespace-pre-wrap</code></li>
+  </ul>
+
+  <h3>Full-Screen Lesson Viewer</h3>
+  <p>When a user clicks a lesson or reference card, a full-screen overlay opens. The HTML is passed through:</p>
+  <ol>
+    <li><code>injectSharedStyles()</code> — injects a comprehensive CSS stylesheet (from <code>lib/shared-styles.ts</code>) that styles <code>.meta</code>, <code>.insight</code>, <code>.compare</code>, <code>.bad</code>, <code>.good</code>, <code>.quiz</code>, <code>.q</code>, <code>.next</code>, <code>.term</code>, <code>.name</code>, <code>.def</code>, etc.</li>
+    <li><code>injectQuizScript()</code> — injects JavaScript that makes quiz questions interactive (click to reveal correct answer, green highlight + feedback)</li>
+    <li>Rendered in a sandboxed <code>&lt;iframe&gt;</code> with <code>srcDoc</code></li>
+  </ol>
+
+  <h3>Resource Gallery (<code>app/(dashboard)/workspaces/[id]/resources/page.tsx</code>)</h3>
+  <p>Server-side rendered page showing all lessons, references, and learning records for a workspace. Filterable by type. Each card shows a type badge, title, and preview (iframe for lessons/references, bullet list for records).</p>
+
+  <h3>Roadmap View (<code>components/roadmap/roadmap-view.tsx</code>)</h3>
+  <p>Vertical timeline with numbered steps, progress bar, and toggle buttons. Clicking "Done" toggles <code>completed</code> ↔ <code>upcoming</code> via <code>PATCH /api/workspaces/[id]/roadmap</code>. Auto-refreshes every 5 seconds.</p>
+</div>
+
+<!-- 8. Streaming Architecture -->
+<div class="section">
+  <h2><span class="num">8</span> Client-Side Streaming</h2>
+
+  <h3>Stream Store (<code>lib/chat-stream-store.ts</code>)</h3>
+  <p>An in-memory <code>Map&lt;workspaceId, StreamState&gt;</code> with pub/sub:</p>
+  <ul>
+    <li><strong>Survives navigations</strong> — streaming continues even if the user switches tabs</li>
+    <li><strong>TTL eviction</strong> — stale entries (30 min no access) are cleaned up</li>
+    <li><strong>State</strong>: <code>streaming</code>, <code>streamingContent</code>, <code>error</code>, <code>sending</code>, <code>abortController</code>, <code>lastMessage</code></li>
+  </ul>
+
+  <h3>React Hook (<code>hooks/use-chat-stream.ts</code>)</h3>
+  <p>Uses <code>useSyncExternalStore</code> to subscribe to the stream store from React components.</p>
+
+  <h3>SSE Parsing (<code>lib/chat-stream.ts</code>)</h3>
+  <p><code>sendChatMessage()</code> posts to <code>/api/chat</code>, reads SSE <code>data:</code> lines, handles:</p>
+  <ul>
+    <li>Rate limiting (429) with retry-after message</li>
+    <li>Safety filter responses (marked with <code>"User Safety: safe/unsafe"</code>)</li>
+    <li>Empty responses — rolls back the user message</li>
+    <li>Network errors — preserves any partial content received</li>
+    <li>AbortController — allows cancellation mid-stream</li>
+  </ul>
+</div>
+
+<!-- 9. Validation -->
+<div class="section">
+  <h2><span class="num">9</span> Response Evaluation (<code>lib/eval-response.ts</code>)</h2>
+  <p>An offline validation library (not called in the main chat flow) that checks AI output quality:</p>
+
+  <div class="file-grid">
+    <div class="file-card">
+      <div class="path">Lessons</div>
+      <div class="desc">Checks for <code>&lt;html&gt;</code>/<code>&lt;head&gt;</code>/<code>&lt;body&gt;</code> tags, recommended CSS classes (<code>meta</code>, <code>insight</code>, <code>compare</code>, <code>quiz</code>, <code>next</code>), <code>&lt;h1&gt;</code> heading, min content length</div>
+    </div>
+    <div class="file-card">
+      <div class="path">References</div>
+      <div class="desc">Checks HTML structure, <code>term</code>/<code>name</code>/<code>def</code> CSS classes, at least one term entry</div>
+    </div>
+    <div class="file-card">
+      <div class="path">Roadmaps</div>
+      <div class="desc">Validates JSON parseability, <code>goal</code> field, <code>steps</code> array, each step's <code>title</code>/<code>status</code>/<code>order</code>/<code>description</code>, ascending order check</div>
+    </div>
+    <div class="file-card">
+      <div class="path">Records</div>
+      <div class="desc">Minimum content length (10 chars), bullet list format (<code>-</code> or <code>•</code>)</div>
+    </div>
+  </div>
+
+  <p>Returns an <code>EvalReport</code> with <code>passed</code> boolean, <code>issues[]</code> (errors + warnings), and <code>stats</code> (block counts, text length).</p>
+</div>
+
+<!-- 10. Key Files -->
+<div class="section">
+  <h2><span class="num">10</span> Key Files</h2>
+  <div class="file-grid">
+    <div class="file-card"><div class="path">app/api/chat/route.ts</div><div class="desc">Central orchestration: auth, rate limit, context, AI, streaming, block saving</div></div>
+    <div class="file-card"><div class="path">lib/openrouter.ts</div><div class="desc">OpenRouter client + TEACH_SYSTEM_PROMPT definition</div></div>
+    <div class="file-card"><div class="path">lib/context.ts</div><div class="desc">Token-budgeted context builder (24K char budget)</div></div>
+    <div class="file-card"><div class="path">lib/blocks.ts</div><div class="desc">parseBlocks(), slugify(), stripHtml(), stripAIWrapper()</div></div>
+    <div class="file-card"><div class="path">lib/eval-response.ts</div><div class="desc">Offline response validation (HTML, CSS, JSON checks)</div></div>
+    <div class="file-card"><div class="path">lib/chat-stream.ts</div><div class="desc">Client-side SSE streaming with error handling</div></div>
+    <div class="file-card"><div class="path">lib/chat-stream-store.ts</div><div class="desc">In-memory stream store (survives navigations)</div></div>
+    <div class="file-card"><div class="path">lib/shared-styles.ts</div><div class="desc">CSS stylesheet injected into lesson/reference HTML</div></div>
+    <div class="file-card"><div class="path">lib/quiz-inject.ts</div><div class="desc">Interactive quiz JS injected into lesson HTML</div></div>
+    <div class="file-card"><div class="path">lib/web-search.ts</div><div class="desc">Tavily API client + tool definition for AI</div></div>
+    <div class="file-card"><div class="path">lib/rate-limit.ts</div><div class="desc">In-memory per-user rate limiter (20 req/min)</div></div>
+    <div class="file-card"><div class="path">lib/logger.ts</div><div class="desc">Structured JSON logging for LLM calls/responses</div></div>
+    <div class="file-card"><div class="path">components/chat/chat-message.tsx</div><div class="desc">Renders text + block attachments (lessons, refs, records, roadmaps)</div></div>
+    <div class="file-card"><div class="path">components/iframe-preview.tsx</div><div class="desc">Scaled iframe preview of HTML content (1/3 scale)</div></div>
+    <div class="file-card"><div class="path">components/roadmap/roadmap-view.tsx</div><div class="desc">Interactive roadmap timeline with step toggling</div></div>
+    <div class="file-card"><div class="path">components/resources/resource-gallery.tsx</div><div class="desc">Filterable gallery of all workspace resources</div></div>
+    <div class="file-card"><div class="path">hooks/use-chat-stream.ts</div><div class="desc">React hook wrapping stream store via useSyncExternalStore</div></div>
+  </div>
+</div>
+
+<!-- 11. Example Walkthrough -->
+<div class="section">
+  <h2><span class="num">11</span> End-to-End Example</h2>
+
+  <div class="box green">
+    <strong>Scenario:</strong> User creates a workspace "Python Basics" with mission "I want to build web apps" and asks "Create a roadmap for learning Python."
+  </div>
+
+  <ol>
+    <li><strong>Create workspace</strong> → <code>POST /api/workspaces</code> saves <code>{ topic: "Python Basics", mission: "I want to build web apps" }</code></li>
+    <li><strong>User sends</strong> "Create a roadmap for learning Python"</li>
+    <li><strong>API receives</strong> the message, saves user message, fetches context (no lessons/references/roadmaps yet)</li>
+    <li><strong>buildContext()</strong> produces: system prompt + <code>TOPIC: Python Basics, MISSION: I want to build web apps, LESSONS CREATED: None yet</code></li>
+    <li><strong>AI generates</strong> a <code>:::roadmap[Learning Path: Python Basics]</code> with JSON steps</li>
+    <li><strong>Client streams</strong> the response as SSE chunks, renders text in real-time</li>
+    <li><strong>After stream:</strong> full response saved to <code>chat_messages</code>, <code>parseBlocks()</code> extracts roadmap JSON, upserts to <code>roadmaps</code> table</li>
+    <li><strong>User sees</strong> "View Roadmap: Learning Path: Python Basics" button in the chat</li>
+    <li><strong>User clicks</strong> → navigates to roadmap page, sees timeline with steps</li>
+    <li><strong>Next message:</strong> "Create a lesson about Python variables"</li>
+    <li><strong>AI generates</strong> <code>:::lesson[Python Variables]</code> with HTML: meta, h1, paragraphs, compare (bad vs good examples), quiz, next steps</li>
+    <li><strong>parseBlocks()</strong> extracts lesson, calls <code>upsert_lesson_with_version()</code> RPC to store in <code>lessons</code> with slug <code>python-variables</code>, version 1</li>
+    <li><strong>User clicks</strong> the lesson card → full-screen overlay with styled HTML + interactive quiz</li>
+    <li><strong>Later:</strong> If AI updates the same lesson, old version is saved to <code>lesson_versions</code>, version incremented</li>
+    <li><strong>After 25 messages:</strong> a summary is generated and stored on the workspace to preserve long-term context</li>
+  </ol>
+</div>
+
+<div style="text-align:center;color:#94a3b8;font-size:0.85rem;padding:1rem 0 2rem;">
+  TeachFlow — Built with Next.js 16, Supabase, OpenRouter (Agnes 2.0 Flash), and TypeScript
+</div>
+
+</div>
+</body>
+</html>
