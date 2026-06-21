@@ -177,7 +177,7 @@ export async function POST(request: Request) {
 
   logLlmCall({ userId: user.id, workspaceId, model: MODEL, messageCount: historyMessages.length, type: 'chat' })
 
-  const tryStream = async (msgs: typeof messages): Promise<ReadableStream | null> => {
+  const tryStream = async (msgs: typeof messages): Promise<AsyncIterable<{ choices: { delta: { content?: string | null } }[] }> | null> => {
     try {
       return await openrouter.chat.completions.create({ model: MODEL, messages: msgs, stream: true }) as AsyncIterable<{ choices: { delta: { content?: string | null } }[] }>
     } catch {
@@ -201,7 +201,7 @@ export async function POST(request: Request) {
     const toolCalls = choice.message.tool_calls
 
     if (choice.finish_reason === 'tool_calls' && toolCalls && toolCalls.length > 0) {
-      for (const toolCall of toolCalls) {
+      for (const toolCall of toolCalls as { id: string; function: { name: string; arguments: string }; type?: string }[]) {
         const args = JSON.parse(toolCall.function.arguments)
         const searchRes = await searchWeb(args.query)
         const result = searchRes ? formatSearchContext(searchRes) : 'Web search failed. Proceed without search results.'
